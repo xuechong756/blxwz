@@ -4050,7 +4050,18 @@ window.__require = function e(t, o, n) {
 					window.h5api && window.h5api.showRecommend();
                 }, this);	
                 this.node.addChild(recomNode);	
-            }
+				
+				var thisObj = this;
+				//埋点 激励检测
+				this.TimeCheckAd = setInterval(function(){
+					window.h5api && window.h5api.canPlayAd(function(data){
+					  thisObj.CanPlay = data.canPlayAd;
+					});
+				}, 500);
+            },
+			t.prototype.onDestroy = function(){
+				clearInterval(this.TimeCheckAd);
+			}
             ,
             t.prototype.start = function() {
                 c.default.Instance.addListener(this.GAME_START, this.startGameHandle, this)
@@ -4106,36 +4117,42 @@ window.__require = function e(t, o, n) {
             }
             ,
             t.prototype.setNextLevel = function() {
-
                 if(this.Tili > 0){
                     this.TiliLabel.string = "体力:" + (--this.Tili);
                     cc.sys.localStorage.setItem("tl", this.Tili);
                     this.nextLevel();
                 }else{
-                    var thisObj = this;
-                    
-                    //埋点 激励回调下面
-					this.dialogConfirm("使用激励获得继续?", function(){
-						window.h5api && window.h5api.playAd(function(obj){
-							console.log('代码:' + obj.code + ',消息:' + obj.message);
-							if (obj.code === 10000) {
-								console.log('开始播放');
-							} else if (obj.code === 10001) {
-                                {
-                                    thisObj.userData.currMinLevel++,
-                                    5 == thisObj.userData.currMinLevel && (thisObj.userData.currMaxLevel++,
-                                        thisObj.userData.currMinLevel = 1);
-                                    thisObj.saveUserData();
-                                    thisObj.nextLevel();
-                                }
-							} else {
-								console.log('广告异常');
-							}
-						}.bind(this));
-					}, function(){});
+                    if(!this.CanPlay){
+						this.dialogConfirm("", "关闭", "激励用完,请明天再试~", function(){
+							
+						}, function(){});
+					}else{
+						var thisObj = this;
+						//埋点 激励回调下面
+						this.dialogConfirm("关闭", "使用", "使用激励获得下一关?", function(){
+							window.h5api && window.h5api.playAd(function(obj){
+								console.log('代码:' + obj.code + ',消息:' + obj.message);
+								if (obj.code === 10000) {
+									console.log('开始播放');
+								} else if (obj.code === 10001) {
+									{
+										thisObj.userData.currMinLevel++,
+										5 == thisObj.userData.currMinLevel && (thisObj.userData.currMaxLevel++,
+											thisObj.userData.currMinLevel = 1);
+										thisObj.saveUserData();
+										thisObj.nextLevel();
+									}
+								} else {
+									console.log('广告异常');
+								}
+							}.bind(this));
+						}, function(){
+							
+						});
+					}
                 }
             },
-			t.prototype.dialogConfirm = function(infor, enterFun, cancelFun, viewNode){
+			t.prototype.dialogConfirm = function(left, right, infor, enterFun, cancelFun, viewNode){
 				var markNode = new cc.Node();
 				var graphics = markNode.addComponent(cc.Graphics);
 				let _canvas = cc.Canvas.instance;
@@ -4183,7 +4200,7 @@ window.__require = function e(t, o, n) {
 				btnLeftNode.color = new cc.Color(0, 0, 0, 255);
 				
 				var btnLeft = btnLeftNode.addComponent(cc.Label);
-				btnLeft.string = "关闭";
+				btnLeft.string = left;
 				btnLeft.fontSize = 30;
 				btnLeft.lineHeight = btnLeft.fontSize;
 				btnLeftNode.x = -dialongWinWith/4 ;
@@ -4203,7 +4220,7 @@ window.__require = function e(t, o, n) {
 				var btnRightNode = new cc.Node();
 				btnRightNode.color = new cc.Color(0, 0, 0, 255);
 				var btnRight = btnRightNode.addComponent(cc.Label);
-				btnRight.string = "使用";
+				btnRight.string = right;
 				btnRight.fontSize = btnLeft.fontSize + 10;
 				btnRight.lineHeight = btnRight.fontSize;
 				btnRightNode.x = dialongWinWith/4 ;
