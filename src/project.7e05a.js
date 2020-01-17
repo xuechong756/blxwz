@@ -3994,17 +3994,45 @@ window.__require = function e(t, o, n) {
 				
 				var reBtn = cc.find("MainPanel/restartBtn", this.node);
 				reBtn.removeComponent(cc.Widget);
-				console.log(reBtn);
 				
+                this.Tili = cc.sys.localStorage.getItem("tl");
+                if(null == this.Tili || undefined == this.Tili || "" == this.Tili){
+                    this.Tili = 3;
+                }
+                
+                cc.game.on(cc.game.EVENT_HIDE, function() {
+                    cc.sys.localStorage.setItem("tl", this.Tili);
+                    this.saveUserData();
+                }.bind(this));
+                
 				//修改 体力
-				this.Tili = 10;
 				var tiliNode = new cc.Node();
 				tiliNode.x = reBtn.x + reBtn.width/2;
 				tiliNode.y = reBtn.y - reBtn.height;
 				tiliNode.parent = reBtn.parent;
 				
 				this.TiliLabel = tiliNode.addComponent(cc.Label);
-				this.TiliLabel.string = "体力:" + this.Tili;
+                this.TiliLabel.string = "体力:" + this.Tili;
+                //倒计时
+                var timeNode = new cc.Node();
+                timeNode.x = tiliNode.x;
+                timeNode.y = tiliNode.y - tiliNode.height;
+                timeNode.parent = tiliNode.parent;
+
+                //总定时
+                var time_s = 1800;
+                var timeLabel = timeNode.addComponent(cc.Label);
+                timeLabel.fontSize = 30;
+                timeLabel.lineHeight = timeLabel.fontSize;
+                timeLabel.schedule(function(){
+                    if(--time_s > 0){
+                        timeLabel.string = ((time_s/60)>>0) + ":" + (time_s%60);
+                    }else{
+                        time_s = 1800;
+                        cc.sys.localStorage.setItem("tl", this.Tili);
+                        this.TiliLabel.string = "体力:" + this.Tili;
+                    }
+                }.bind(this), 1);
             }
             ,
             t.prototype.start = function() {
@@ -4030,18 +4058,22 @@ window.__require = function e(t, o, n) {
                         }
                         if (console.log("check falldown bottle num: ", this.fallDownBottleNum, this.bottleNum),
                         this.fallDownBottleNum >= this.bottleNum)
-                            this.userData.currMinLevel++,
-                            5 == this.userData.currMinLevel && (this.userData.currMaxLevel++,
-                            this.userData.currMinLevel = 1),
-                            s.default.Instance.DisplayScissor(!1),
-                            this.saveUserData(),
+                        {
+                            if((this.Tili - 1) >= 0){
+                                this.userData.currMinLevel++,
+                                5 == this.userData.currMinLevel && (this.userData.currMaxLevel++,
+                                this.userData.currMinLevel = 1),
+                                s.default.Instance.DisplayScissor(!1),
+                                this.saveUserData();
+                            }
                             this.clearData(),
                             l.default.Instance.nextLevelJson(),
                             this.gameoverParticels[0].node.active = !0,
                             this.gameoverParticels[1].node.active = !0,
                             this.gameoverParticels[0].resetSystem(),
-                            this.gameoverParticels[1].resetSystem(),
+                            this.gameoverParticels[1].resetSystem();
                             setTimeout(this.gameOver.bind(this), 2e3);
+                        }
                         else if (this.cutBallCount <= 0 && this.gameType == n.NailBall && (this.startTimer += 1,
                         this.startTimer > 3))
                             return this.gameStart = !1,
@@ -4057,14 +4089,30 @@ window.__require = function e(t, o, n) {
             }
             ,
             t.prototype.setNextLevel = function() {
+
+                if(this.Tili > 0){
+                    this.TiliLabel.string = "体力:" + (--this.Tili);
+                    cc.sys.localStorage.setItem("tl", this.Tili);
+                    this.nextLevel();
+                }else{
+                    var thisObj = this;
+                    
+                    //埋点 激励回调下面
+                    // {
+                        // thisObj.userData.currMinLevel++,
+                        // 5 == thisObj.userData.currMinLevel && (thisObj.userData.currMaxLevel++,
+                        //     thisObj.userData.currMinLevel = 1);
+                    //     thisObj.saveUserData();
+                    //     thisObj.nextLevel();
+                    // }
+                }
+            },
+            t.prototype.nextLevel = function(){
                 p.default.Instance.ropeNodeArr = [],
                 l.default.Instance.parent.destroyAllChildren(),
                 l.default.Instance.parent.removeAllChildren(!0),
                 l.default.Instance.resLoadComplete(),
                 s.default.Instance.UpdateUI();
-				//修改
-				if(this.Tili > 0)
-				this.TiliLabel.string = "体力:" + (--this.Tili);
             }
             ,
             t.prototype.spawnObj = function() {
