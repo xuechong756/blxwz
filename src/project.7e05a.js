@@ -4115,15 +4115,121 @@ window.__require = function e(t, o, n) {
                     var thisObj = this;
                     
                     //埋点 激励回调下面
-                    // {
-                        // thisObj.userData.currMinLevel++,
-                        // 5 == thisObj.userData.currMinLevel && (thisObj.userData.currMaxLevel++,
-                        //     thisObj.userData.currMinLevel = 1);
-                    //     thisObj.saveUserData();
-                    //     thisObj.nextLevel();
-                    // }
+					this.dialogConfirm("使用激励获得继续?", function(){
+						window.h5api && window.h5api.playAd(function(obj){
+							console.log('代码:' + obj.code + ',消息:' + obj.message);
+							if (obj.code === 10000) {
+								console.log('开始播放');
+							} else if (obj.code === 10001) {
+                                {
+                                    thisObj.userData.currMinLevel++,
+                                    5 == thisObj.userData.currMinLevel && (thisObj.userData.currMaxLevel++,
+                                        thisObj.userData.currMinLevel = 1);
+                                    thisObj.saveUserData();
+                                    thisObj.nextLevel();
+                                }
+							} else {
+								console.log('广告异常');
+							}
+						}.bind(this));
+					}, function(){});
                 }
             },
+			t.prototype.dialogConfirm = function(infor, enterFun, cancelFun, viewNode){
+				var markNode = new cc.Node();
+				var graphics = markNode.addComponent(cc.Graphics);
+				let _canvas = cc.Canvas.instance;
+				let _rateR = _canvas.designResolution.height/_canvas.designResolution.width;
+				var winWidth = cc.Canvas.instance.node.height/_rateR;
+				var winHeight = cc.Canvas.instance.node.height;
+				markNode.width = winWidth;
+				markNode.height = winHeight;
+				graphics.rect(-winWidth/2, -winHeight/2,winWidth, winHeight);
+				graphics.fillColor = new cc.Color(0, 0, 0, 125);
+				graphics.fill();
+				var dialogNode = new cc.Node();
+				var dialoagGrap = dialogNode.addComponent(cc.Graphics);
+				var x = winWidth/3;
+				
+				var dialongWinWith = winWidth - x;
+				var dialongWinHeight = dialongWinWith * 0.618;
+				var y = - (dialongWinHeight/2);
+				dialoagGrap.rect(-x, y , dialongWinWith, dialongWinHeight);
+				dialoagGrap.fillColor = new cc.Color(255, 255, 255, 255);
+				dialoagGrap.fill();
+				
+				//title
+				var titleNode = new cc.Node();
+				titleNode.color = new cc.Color(0, 0, 0, 255);
+				var titleLabel = titleNode.addComponent(cc.Label);
+				titleLabel.fontSize = 40;
+				titleLabel.lineHeight = titleLabel.fontSize;
+				titleNode.y = dialongWinHeight/2 - titleLabel.lineHeight;
+				titleLabel.string = "提示";
+				dialogNode.addChild(titleNode);
+				
+				//infor
+				var inforNode = new cc.Node();
+				inforNode.color = new cc.Color(0, 0, 0, 255);
+				var inforLabel = inforNode.addComponent(cc.Label);
+				inforLabel.fontSize = 30;
+				inforLabel.lineHeight = inforLabel.fontSize;
+				inforNode.y += inforLabel.lineHeight;
+				inforLabel.string = infor;
+				dialogNode.addChild(inforNode);
+				
+				//button left
+				var btnLeftNode = new cc.Node();
+				btnLeftNode.color = new cc.Color(0, 0, 0, 255);
+				
+				var btnLeft = btnLeftNode.addComponent(cc.Label);
+				btnLeft.string = "关闭";
+				btnLeft.fontSize = 30;
+				btnLeft.lineHeight = btnLeft.fontSize;
+				btnLeftNode.x = -dialongWinWith/4 ;
+				btnLeftNode.y = -dialongWinHeight/4 ;
+				dialogNode.addChild(btnLeftNode);
+				
+				function cancelCallback(e){
+					console.log("cancel");
+					markNode.destroy();
+					if(cancelFun){
+						cancelFun();
+					}
+				}
+				btnLeftNode.on(cc.Node.EventType.TOUCH_END, cancelCallback, this);
+				
+				//button right 
+				var btnRightNode = new cc.Node();
+				btnRightNode.color = new cc.Color(0, 0, 0, 255);
+				var btnRight = btnRightNode.addComponent(cc.Label);
+				btnRight.string = "使用";
+				btnRight.fontSize = btnLeft.fontSize + 10;
+				btnRight.lineHeight = btnRight.fontSize;
+				btnRightNode.x = dialongWinWith/4 ;
+				btnRightNode.y = -dialongWinHeight/4;
+				dialogNode.addChild(btnRightNode);
+				function enterCallback(e){
+					console.log("enter");
+					markNode.destroy();
+					if(enterFun){
+						enterFun();
+					}
+				}
+				btnRightNode.on(cc.Node.EventType.TOUCH_END, enterCallback, this);
+				
+				
+				markNode.addComponent(cc.BlockInputEvents);
+				markNode.addChild(dialogNode);
+				markNode.zIndex = cc.macro.MAX_ZINDEX;
+				if(viewNode){
+					viewNode.addChild(markNode);
+				}else{
+					var can = cc.director.getScene().getChildByName("Canvas");
+					
+					can.addChild(markNode);
+				}
+			},
             t.prototype.nextLevel = function(){
                 p.default.Instance.ropeNodeArr = [],
                 l.default.Instance.parent.destroyAllChildren(),
