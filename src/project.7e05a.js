@@ -4033,6 +4033,23 @@ window.__require = function e(t, o, n) {
                         this.TiliLabel.string = "体力:" + this.Tili;
                     }
                 }.bind(this), 1);
+
+
+                var recomNode = new cc.Node();
+                recomNode.y = -(this.node.height/2) + 100;
+				var lable = recomNode.addComponent(cc.Label);
+                lable.string = "更多好玩";
+                lable.fontSize = 40;
+                lable.lineHeight = lable.fontSize ;
+				var action = cc.sequence(cc.scaleTo(.5, 1.2), cc.scaleTo(.5, 0.9));
+				action = cc.repeatForever(action);
+                recomNode.runAction(action);
+                recomNode.on(cc.Node.EventType.TOUCH_START, function(){
+                    //埋点 推荐更多好玩
+                   // console.log("more game");
+					window.h5api && window.h5api.showRecommend();
+                }, this);	
+                this.node.addChild(recomNode);	
             }
             ,
             t.prototype.start = function() {
