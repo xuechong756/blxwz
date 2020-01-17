@@ -265,8 +265,9 @@ window.__require = function e(t, o, n) {
             ,
             e.prototype.initAd = function() {
                 var e = this
-                  , t = "http://www.ascmob.com/fastgameserver/advert/downAdConfigure?channelId=" + this.adPlugin.CHANNLEID + "&gameId=" + this.adPlugin.GAMEID
-                  , o = this
+                  //, t = "http://www.ascmob.com/fastgameserver/advert/downAdConfigure?channelId=" + this.adPlugin.CHANNLEID + "&gameId=" + this.adPlugin.GAMEID
+					,t= ""
+				 , o = this
                   , n = new XMLHttpRequest;
                 n.onreadystatechange = function() {
                     if (4 == n.readyState && 200 == n.status) {
@@ -353,7 +354,8 @@ window.__require = function e(t, o, n) {
                 }
                 ,
                 console.log(i),
-                r.open("POST", "http://www.ascmob.com/fastgameserver/advert/downPromoGames", !0),
+              //  r.open("POST", "http://www.ascmob.com/fastgameserver/advert/downPromoGames", !0),
+			  
                 r.setRequestHeader("Content-type", "application/x-www-form-urlencoded"),
                 r.send(i),
                 setInterval(function() {
@@ -743,7 +745,7 @@ window.__require = function e(t, o, n) {
             }
             ,
             e.prototype.showVideo = function(e) {
-                var t = new cc.Node("layerBg");
+             /*   var t = new cc.Node("layerBg");
                 t.width = 2560,
                 t.height = 2560,
                 t.x = cc.winSize.width / 2,
@@ -790,7 +792,7 @@ window.__require = function e(t, o, n) {
                 r.on(cc.Node.EventType.TOUCH_START, function(n) {
                     o.removeChild(t),
                     e(!1)
-                })
+                })*/
             }
             ,
             e.prototype.getVideoFlag = function() {
@@ -798,7 +800,7 @@ window.__require = function e(t, o, n) {
             }
             ,
             e.prototype.showNative = function(e, t, o) {
-                console.log("showNative====================");
+             /*   console.log("showNative====================");
                 var n = cc.director.getScene()
                   , i = this;
                 cc.loader.load("https://fastgame.xplaymobile.com/navigateUI/icon/iconBg.png", function(r, a) {
@@ -813,11 +815,11 @@ window.__require = function e(t, o, n) {
                     i.bigImage.zIndex = 29999,
                     "" != i.cocosGroup && (i.bigImage.group = i.cocosGroup),
                     n.addChild(i.bigImage)
-                })
+                })*/
             }
             ,
             e.prototype.showNativeIcon = function(e, t, o, n) {
-                if (console.log("showNative===================="),
+             /*   if (console.log("showNative===================="),
                 !r.nativeIcon) {
                     var i = cc.director.getScene()
                       , r = this;
@@ -833,7 +835,7 @@ window.__require = function e(t, o, n) {
                         "" != r.cocosGroup && (r.nativeIcon.group = r.cocosGroup),
                         i.addChild(r.nativeIcon)
                     })
-                }
+                }*/
             }
             ,
             e.prototype.getNativeFlag = function() {
@@ -845,7 +847,7 @@ window.__require = function e(t, o, n) {
             }
             ,
             e.prototype.showNavigateSettle = function(e, t, o) {
-                switch (e) {
+               /* switch (e) {
                 case 1:
                     var n = cc.director.getScene()
                       , i = this;
@@ -910,7 +912,7 @@ window.__require = function e(t, o, n) {
                         "" != i.cocosGroup && (i.navigateSettle.group = i.cocosGroup),
                         n.addChild(i.navigateSettle)
                     })
-                }
+                }*/
             }
             ,
             e.prototype.hideNavigateSettle = function() {
@@ -929,7 +931,7 @@ window.__require = function e(t, o, n) {
             e.prototype.showNativeInsters = function() {}
             ,
             e.prototype.showNavigateIcon = function(e, t, o, n) {
-                var i = cc.director.getScene()
+             /*  var i = cc.director.getScene()
                   , r = this;
                 cc.loader.load("https://fastgame.xplaymobile.com/navigateUI/icon/iconBg.png", function(a, c) {
                     r.navigateBg = new cc.Node("navigateBg"),
@@ -941,7 +943,7 @@ window.__require = function e(t, o, n) {
                     r.navigateBg.y = n,
                     "" != r.cocosGroup && (r.navigateBg.group = r.cocosGroup),
                     i.addChild(r.navigateBg)
-                })
+                })*/
             }
             ,
             e.prototype.showNavigateGroup = function(e, t) {}
@@ -2835,7 +2837,8 @@ window.__require = function e(t, o, n) {
         });
         var n = function() {
             function e() {}
-            return e.SERVER_PATH = "http://192.168.1.31:8081/",
+            return //e.SERVER_PATH = "http://192.168.1.31:8081/",
+			e.SERVER_PATH = "",
             e.UI_PANEL_DIR = "prefabs/ui_panel/",
             e.DETAIL_PANEL_PATH = "prefabs/Details/",
             e.UI_ATLAS_PATH = "atlas",
