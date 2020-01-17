@@ -3993,6 +3993,8 @@ window.__require = function e(t, o, n) {
                 console.log("userdata,", this.userData.currMaxLevel, this.userData.currMinLevel));
 				
 				var reBtn = cc.find("MainPanel/restartBtn", this.node);
+				reBtn.removeComponent(cc.Widget);
+				console.log(reBtn);
 				
 				//修改 体力
 				this.Tili = 10;
